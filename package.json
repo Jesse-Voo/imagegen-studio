@@ -1,7 +1,7 @@
 {
   "name": "imagegen-studio",
   "productName": "ImageGen Studio",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Desktop app for generating images with Gemini, OpenAI, free and local models, with AI prompt refinement.",
   "main": "src/main.js",
   "license": "MIT",
