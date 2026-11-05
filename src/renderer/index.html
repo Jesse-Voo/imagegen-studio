@@ -1,19 +1,19 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: file:; style-src 'self'; script-src 'self'; font-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ImageGen Studio</title>
+<link rel="stylesheet" href="../../node_modules/@picocss/pico/css/pico.zinc.min.css">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="glow" aria-hidden="true"></div>
 <aside>
-  <div class="brand"><span class="logo"><i data-lucide="sparkles"></i></span><h1>ImageGen Studio</h1></div>
+  <h1><i data-lucide="image"></i>ImageGen Studio</h1>
 
   <section>
-    <h3><i data-lucide="cpu"></i> Image model</h3>
+    <h3>Image model</h3>
     <label>Source <select id="backend"></select></label>
     <label>Model <input id="model" list="models" placeholder="default"><datalist id="models"></datalist></label>
     <p id="srcNote" class="hint" hidden></p>
@@ -21,27 +21,27 @@
   </section>
 
   <section>
-    <h3><i data-lucide="crop"></i> Format</h3>
-    <div class="seg" id="sizeSeg" role="radiogroup" aria-label="Image shape">
-      <button type="button" role="radio" data-size="square" aria-checked="true"><i data-lucide="square"></i>Square</button>
-      <button type="button" role="radio" data-size="landscape" aria-checked="false"><i data-lucide="rectangle-horizontal"></i>Wide</button>
-      <button type="button" role="radio" data-size="portrait" aria-checked="false"><i data-lucide="rectangle-vertical"></i>Tall</button>
+    <h3>Format</h3>
+    <div class="seg" id="sizeSeg" role="group" aria-label="Image shape">
+      <button type="button" data-size="square" class="" aria-pressed="true"><i data-lucide="square"></i>Square</button>
+      <button type="button" data-size="landscape" class="secondary outline" aria-pressed="false"><i data-lucide="rectangle-horizontal"></i>Wide</button>
+      <button type="button" data-size="portrait" class="secondary outline" aria-pressed="false"><i data-lucide="rectangle-vertical"></i>Tall</button>
     </div>
     <div class="stepper">
       <span>How many</span>
-      <div><button type="button" id="minus" aria-label="Fewer"><i data-lucide="minus"></i></button><output id="count">1</output><button type="button" id="plus" aria-label="More"><i data-lucide="plus"></i></button></div>
+      <div><button type="button" id="minus" class="secondary outline" aria-label="Fewer"><i data-lucide="minus"></i></button><output id="count">1</output><button type="button" id="plus" class="secondary outline" aria-label="More"><i data-lucide="plus"></i></button></div>
     </div>
   </section>
 
   <section id="refBox">
-    <div class="rowhead"><h3><i data-lucide="images"></i> References</h3><button id="addRef" class="chip"><i data-lucide="image-plus"></i>Add</button></div>
+    <div class="rowhead"><h3>Reference images</h3><button id="addRef" class="secondary outline icon" aria-label="Add reference image"><i data-lucide="image-plus"></i></button></div>
     <div id="refs" class="thumbs"></div>
     <p id="refNote" class="hint" hidden>This source ignores reference images.</p>
   </section>
 
   <section>
-    <h3><i data-lucide="wand-sparkles"></i> Prompt helper</h3>
-    <label class="switch"><input id="refineOn" type="checkbox"><span class="track"></span>Refine my prompt with AI first</label>
+    <h3>Prompt helper</h3>
+    <label><input id="refineOn" type="checkbox" role="switch"> Refine my prompt with AI first</label>
     <div id="refineOpts" hidden>
       <label>Refine with <select id="refiner"></select></label>
       <label>Refiner model <input id="refModel" placeholder="default"></label>
@@ -49,44 +49,44 @@
   </section>
 
   <div class="spacer"></div>
-  <button id="settingsBtn" class="ghost wide"><i data-lucide="settings"></i>Settings</button>
+  <button id="settingsBtn" class="secondary outline"><i data-lucide="settings"></i>Settings</button>
 </aside>
 
 <main>
-  <div class="composer">
-    <textarea id="prompt" placeholder="Describe the image you want, e.g. a red fox in a snowy forest, watercolor style" rows="4"></textarea>
-    <div class="actions">
-      <button id="refineBtn" class="ghost"><i data-lucide="wand-sparkles"></i>Refine prompt</button>
-      <span class="grow"></span>
-      <span class="kbd">Ctrl + Enter</span>
-      <button id="stop" class="ghost" hidden><i data-lucide="square"></i>Cancel</button>
-      <button id="go" class="primary"><i data-lucide="sparkles"></i>Generate</button>
-    </div>
+  <textarea id="prompt" placeholder="Describe the image you want, e.g. a red fox in a snowy forest, watercolor style" rows="4" aria-label="Image description"></textarea>
+  <div class="actions">
+    <button id="refineBtn" class="secondary outline"><i data-lucide="wand-sparkles"></i>Refine prompt</button>
+    <span class="grow"></span>
+    <kbd>Ctrl</kbd><kbd>Enter</kbd>
+    <button id="stop" class="secondary" hidden><i data-lucide="square"></i>Cancel</button>
+    <button id="go"><i data-lucide="sparkles"></i>Generate</button>
   </div>
   <div id="status" class="status" role="status"></div>
   <div id="empty" class="empty"><i data-lucide="image"></i><p>Your images will show up here.</p></div>
   <div id="gallery"></div>
 </main>
 
-<div id="lightbox" hidden><img id="lbImg" alt="Generated image, enlarged"><button id="lbClose" class="chip" aria-label="Close"><i data-lucide="x"></i></button></div>
+<div id="lightbox" hidden><img id="lbImg" alt="Generated image, enlarged"><button id="lbClose" class="secondary icon" aria-label="Close"><i data-lucide="x"></i></button></div>
 
 <dialog id="dlg">
-  <form method="dialog" id="settingsForm">
-    <h2><i data-lucide="settings"></i> Settings</h2>
-    <label>Save images to
-      <div class="row"><input id="outDir" readonly><button type="button" id="pickOut" class="ghost"><i data-lucide="folder-open"></i>Browse</button></div>
-    </label>
-    <label>Gemini API key <input id="geminiKey" type="password" autocomplete="off" placeholder="leave blank to keep the saved key"></label>
-    <label>OpenAI API key <input id="openaiKey" type="password" autocomplete="off" placeholder="leave blank to keep the saved key"></label>
-    <p class="hint">Keys are encrypted with Windows (DPAPI) and stored on this PC only. Environment variables GEMINI_API_KEY and OPENAI_API_KEY also work. ChatGPT sign-in cannot generate images; OpenAI needs an API key.</p>
-    <label>Local image server URL <input id="localUrl" placeholder="http://127.0.0.1:8080/v1"></label>
-    <label>Ollama URL <input id="ollamaUrl" placeholder="http://127.0.0.1:11434"></label>
-    <div class="row">
-      <button type="button" id="clearGemini" class="ghost"><i data-lucide="trash-2"></i>Remove Gemini key</button>
-      <button type="button" id="clearOpenai" class="ghost"><i data-lucide="trash-2"></i>Remove OpenAI key</button>
-    </div>
-    <div class="actions"><span class="grow"></span><button value="cancel" class="ghost">Close</button><button id="saveSettings" value="save" class="primary">Save</button></div>
-  </form>
+  <article>
+    <form method="dialog" id="settingsForm">
+      <h2><i data-lucide="settings"></i> Settings</h2>
+      <label>Save images to
+        <div class="row"><input id="outDir" readonly><button type="button" id="pickOut" class="secondary outline"><i data-lucide="folder-open"></i>Browse</button></div>
+      </label>
+      <label>Gemini API key <input id="geminiKey" type="password" autocomplete="off" placeholder="leave blank to keep the saved key"></label>
+      <label>OpenAI API key <input id="openaiKey" type="password" autocomplete="off" placeholder="leave blank to keep the saved key"></label>
+      <p class="hint">Keys are encrypted with Windows (DPAPI) and stored on this PC only. Environment variables GEMINI_API_KEY and OPENAI_API_KEY also work. ChatGPT sign-in cannot generate images; OpenAI needs an API key.</p>
+      <label>Local image server URL <input id="localUrl" placeholder="http://127.0.0.1:8080/v1"></label>
+      <label>Ollama URL <input id="ollamaUrl" placeholder="http://127.0.0.1:11434"></label>
+      <div class="row">
+        <button type="button" id="clearGemini" class="secondary outline"><i data-lucide="trash-2"></i>Remove Gemini key</button>
+        <button type="button" id="clearOpenai" class="secondary outline"><i data-lucide="trash-2"></i>Remove OpenAI key</button>
+      </div>
+      <footer class="actions"><span class="grow"></span><button value="cancel" class="secondary">Close</button><button id="saveSettings" value="save">Save</button></footer>
+    </form>
+  </article>
 </dialog>
 <script src="../../node_modules/lucide/dist/umd/lucide.min.js"></script>
 <script src="../../node_modules/motion/dist/motion.js"></script>

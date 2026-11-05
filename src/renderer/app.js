@@ -54,6 +54,7 @@ function renderRefs() {
     img.alt = p.split(/[\\/]/).pop();
     const x = document.createElement("button");
     x.innerHTML = '<i data-lucide="x"></i>';
+    x.className = "secondary";
     x.setAttribute("aria-label", "Remove reference image");
     x.onclick = () => {
       refs.splice(i, 1);
@@ -67,7 +68,7 @@ function renderRefs() {
 }
 
 function card(img) {
-  const c = document.createElement("div");
+  const c = document.createElement("article");
   c.className = "card";
   const im = document.createElement("img");
   im.src = img.dataUrl;
@@ -79,11 +80,13 @@ function card(img) {
   name.textContent = img.path.split(/[\\/]/).pop();
   name.title = img.path;
   const b = document.createElement("button");
+  b.className = "secondary outline icon";
   b.title = "Show in folder";
   b.setAttribute("aria-label", "Show in folder");
   b.innerHTML = '<i data-lucide="folder-open"></i>';
   b.onclick = () => window.studio.reveal(img.path);
   const u = document.createElement("button");
+  u.className = "secondary outline icon";
   u.title = "Use as reference image";
   u.setAttribute("aria-label", "Use as reference image");
   u.innerHTML = '<i data-lucide="image-plus"></i>';
@@ -110,6 +113,7 @@ function showSkeletons(n) {
   for (let i = 0; i < n; i++) {
     const s = document.createElement("div");
     s.className = "skel";
+    s.setAttribute("aria-busy", "true");
     g.prepend(s);
     list.push(s);
   }
@@ -217,7 +221,10 @@ async function init() {
   document.querySelectorAll("#sizeSeg button").forEach((b) => {
     b.onclick = () => {
       size = b.dataset.size;
-      document.querySelectorAll("#sizeSeg button").forEach((x) => x.setAttribute("aria-checked", String(x === b)));
+      document.querySelectorAll("#sizeSeg button").forEach((x) => {
+        x.setAttribute("aria-pressed", String(x === b));
+        x.className = x === b ? "" : "secondary outline";
+      });
     };
   });
   $("minus").onclick = () => ($("count").textContent = count = Math.max(1, count - 1));
