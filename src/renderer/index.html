@@ -9,21 +9,26 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<aside>
-  <h1><i data-lucide="image"></i>ImageGen Studio</h1>
+<header>
+  <span class="title">ImageGen Studio</span>
+  <button id="settingsBtn" class="plain" aria-label="Settings" title="Settings"><i data-lucide="settings"></i></button>
+</header>
 
-  <section>
-    <h3>Image model</h3>
-    <label>Source <select id="backend"></select></label>
+<main id="scroller">
+  <div id="empty" class="empty"><i data-lucide="image"></i><h2>What should we make?</h2></div>
+  <div id="feed"></div>
+</main>
+
+<section class="dock">
+  <div id="status" class="status" role="status"></div>
+
+  <div id="options" class="pop" hidden>
+    <label>Image source <select id="backend"></select></label>
     <label>Model <input id="model" list="models" placeholder="default"><datalist id="models"></datalist></label>
     <p id="srcNote" class="hint" hidden></p>
     <div id="keyWarn" class="warn" hidden><i data-lucide="key-round"></i><span></span></div>
-  </section>
-
-  <section>
-    <h3>Format</h3>
     <div class="seg" id="sizeSeg" role="group" aria-label="Image shape">
-      <button type="button" data-size="square" class="" aria-pressed="true"><i data-lucide="square"></i>Square</button>
+      <button type="button" data-size="square" aria-pressed="true"><i data-lucide="square"></i>Square</button>
       <button type="button" data-size="landscape" class="secondary outline" aria-pressed="false"><i data-lucide="rectangle-horizontal"></i>Wide</button>
       <button type="button" data-size="portrait" class="secondary outline" aria-pressed="false"><i data-lucide="rectangle-vertical"></i>Tall</button>
     </div>
@@ -31,47 +36,34 @@
       <span>How many</span>
       <div><button type="button" id="minus" class="secondary outline" aria-label="Fewer"><i data-lucide="minus"></i></button><output id="count">1</output><button type="button" id="plus" class="secondary outline" aria-label="More"><i data-lucide="plus"></i></button></div>
     </div>
-  </section>
-
-  <section id="refBox">
-    <div class="rowhead"><h3>Reference images</h3><button id="addRef" class="secondary outline icon" aria-label="Add reference image"><i data-lucide="image-plus"></i></button></div>
-    <div id="refs" class="thumbs"></div>
     <p id="refNote" class="hint" hidden>This source ignores reference images.</p>
-  </section>
-
-  <section>
-    <h3>Prompt helper</h3>
     <label><input id="refineOn" type="checkbox" role="switch"> Refine my prompt with AI first</label>
     <div id="refineOpts" hidden>
       <label>Refine with <select id="refiner"></select></label>
       <label>Refiner model <input id="refModel" placeholder="default"></label>
     </div>
-  </section>
-
-  <div class="spacer"></div>
-  <button id="settingsBtn" class="secondary outline"><i data-lucide="settings"></i>Settings</button>
-</aside>
-
-<main>
-  <textarea id="prompt" placeholder="Describe the image you want, e.g. a red fox in a snowy forest, watercolor style" rows="4" aria-label="Image description"></textarea>
-  <div class="actions">
-    <button id="refineBtn" class="secondary outline"><i data-lucide="wand-sparkles"></i>Refine prompt</button>
-    <span class="grow"></span>
-    <kbd>Ctrl</kbd><kbd>Enter</kbd>
-    <button id="stop" class="secondary" hidden><i data-lucide="square"></i>Cancel</button>
-    <button id="go"><i data-lucide="sparkles"></i>Generate</button>
   </div>
-  <div id="status" class="status" role="status"></div>
-  <div id="empty" class="empty"><i data-lucide="image"></i><p>Your images will show up here.</p></div>
-  <div id="gallery"></div>
-</main>
 
-<div id="lightbox" hidden><img id="lbImg" alt="Generated image, enlarged"><button id="lbClose" class="secondary icon" aria-label="Close"><i data-lucide="x"></i></button></div>
+  <div class="composer">
+    <div id="refs" class="thumbs"></div>
+    <textarea id="prompt" placeholder="Describe an image" rows="1" aria-label="Image description"></textarea>
+    <div class="bar">
+      <button id="addRef" class="plain round" aria-label="Add reference image" title="Add reference image"><i data-lucide="plus"></i></button>
+      <button id="refineBtn" class="plain round" aria-label="Refine prompt" title="Refine prompt with AI"><i data-lucide="wand-sparkles"></i></button>
+      <button id="optBtn" class="plain round" aria-label="Options" title="Source, size and count" aria-expanded="false"><i data-lucide="sliders-horizontal"></i></button>
+      <span class="grow"></span>
+      <button id="stop" class="send stopbtn" aria-label="Cancel" title="Cancel" hidden><i data-lucide="square"></i></button>
+      <button id="go" class="send" aria-label="Generate" title="Generate (Ctrl+Enter)"><i data-lucide="arrow-up"></i></button>
+    </div>
+  </div>
+</section>
+
+<div id="lightbox" hidden><img id="lbImg" alt="Generated image, enlarged"><button id="lbClose" class="plain round" aria-label="Close"><i data-lucide="x"></i></button></div>
 
 <dialog id="dlg">
   <article>
     <form method="dialog" id="settingsForm">
-      <h2><i data-lucide="settings"></i> Settings</h2>
+      <h2>Settings</h2>
       <label>Save images to
         <div class="row"><input id="outDir" readonly><button type="button" id="pickOut" class="secondary outline"><i data-lucide="folder-open"></i>Browse</button></div>
       </label>

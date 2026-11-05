@@ -9,6 +9,12 @@ const fadeIn = (el, delay = 0) => window.Motion && window.Motion.animate(el, { o
 
 const toFileUrl = (p) => "file:///" + p.replace(/\\/g, "/").split("/").map((s, i) => (i === 0 ? s : encodeURIComponent(s))).join("/");
 
+function autosize() {
+  const t = $("prompt");
+  t.style.height = "auto";
+  t.style.height = Math.min(t.scrollHeight, 160) + "px";
+}
+
 function setStatus(text, err) {
   const el = $("status");
   el.textContent = text || "";
@@ -54,7 +60,7 @@ function renderRefs() {
     img.alt = p.split(/[\\/]/).pop();
     const x = document.createElement("button");
     x.innerHTML = '<i data-lucide="x"></i>';
-    x.className = "secondary";
+    x.className = "";
     x.setAttribute("aria-label", "Remove reference image");
     x.onclick = () => {
       refs.splice(i, 1);
@@ -80,13 +86,13 @@ function card(img) {
   name.textContent = img.path.split(/[\\/]/).pop();
   name.title = img.path;
   const b = document.createElement("button");
-  b.className = "secondary outline icon";
+  b.className = "plain";
   b.title = "Show in folder";
   b.setAttribute("aria-label", "Show in folder");
   b.innerHTML = '<i data-lucide="folder-open"></i>';
   b.onclick = () => window.studio.reveal(img.path);
   const u = document.createElement("button");
-  u.className = "secondary outline icon";
+  u.className = "plain";
   u.title = "Use as reference image";
   u.setAttribute("aria-label", "Use as reference image");
   u.innerHTML = '<i data-lucide="image-plus"></i>';
@@ -107,17 +113,38 @@ function openLightbox(src) {
   fadeIn($("lbImg"));
 }
 
-function showSkeletons(n) {
-  const g = $("gallery");
-  const list = [];
+function newTurn(prompt, n) {
+  const t = document.createElement("div");
+  t.className = "turn";
+  const b = document.createElement("div");
+  b.className = "bubble";
+  b.textContent = prompt;
+  const r = document.createElement("div");
+  r.className = "reply";
+  const note = document.createElement("p");
+  note.className = "note";
+  const grid = document.createElement("div");
+  grid.className = "grid";
+  const skels = [];
   for (let i = 0; i < n; i++) {
     const s = document.createElement("div");
     s.className = "skel";
     s.setAttribute("aria-busy", "true");
-    g.prepend(s);
-    list.push(s);
+    grid.appendChild(s);
+    skels.push(s);
   }
-  return list;
+  r.append(note, grid);
+  t.append(b, r);
+  $("feed").appendChild(t);
+  $("empty").hidden = true;
+  fadeIn(t);
+  scrollDown();
+  return { t, note, grid, skels };
+}
+
+function scrollDown() {
+  const s = $("scroller");
+  s.scrollTo({ top: s.scrollHeight, behavior: "smooth" });
 }
 
 async function refinePrompt() {
@@ -135,19 +162,23 @@ async function refinePrompt() {
 }
 
 async function generate() {
-  let skels = [];
   let prompt = $("prompt").value.trim();
   if (!prompt) return setStatus("Type a description first.", true);
   $("go").disabled = true;
   $("refineBtn").disabled = true;
+  let turn = null;
   try {
     if ($("refineOn").checked && !(await refinePrompt())) return;
     prompt = $("prompt").value.trim();
     currentId = String(Date.now());
     $("stop").hidden = false;
-    $("empty").hidden = true;
-    skels = showSkeletons(count);
-    setStatus("Generating...");
+    $("options").hidden = true;
+    $("optBtn").setAttribute("aria-expanded", "false");
+    turn = newTurn(prompt, count);
+    $("prompt").value = "";
+    autosize();
+    setStatus("");
+    turn.note.textContent = "Generating...";
     const r = await window.studio.generate({
       id: currentId,
       prompt,
@@ -157,21 +188,28 @@ async function generate() {
       count,
       references: refs,
     });
-    skels.forEach((x) => x.remove());
-    skels = [];
-    if (r.error) return setStatus(r.error, true);
-    const g = $("gallery");
-    r.images.slice().reverse().forEach((img, i) => {
+    turn.skels.forEach((x) => x.remove());
+    turn.skels = [];
+    if (r.error) {
+      turn.note.className = "note err";
+      turn.note.textContent = r.error;
+      return;
+    }
+    r.images.forEach((img, i) => {
       const c = card(img);
-      g.prepend(c);
+      turn.grid.appendChild(c);
       fadeIn(c, i * 0.06);
     });
     icons();
-    if (r.errors.length) setStatus((r.images.length ? "Some images failed:\n" : "") + r.errors.join("\n"), true);
-    else setStatus(`Done. Saved ${r.images.length} image${r.images.length > 1 ? "s" : ""}.`);
+    if (r.errors.length) {
+      turn.note.className = "note err";
+      turn.note.textContent = (r.images.length ? "Some images failed: " : "") + r.errors.join(" | ");
+    } else {
+      turn.note.textContent = `Saved ${r.images.length} image${r.images.length > 1 ? "s" : ""}`;
+    }
+    scrollDown();
   } finally {
-    skels.forEach((x) => x.remove());
-    $("empty").hidden = $("gallery").children.length > 0;
+    if (turn) turn.skels.forEach((x) => x.remove());
     $("go").disabled = false;
     $("refineBtn").disabled = false;
     $("stop").hidden = true;
@@ -236,9 +274,28 @@ async function init() {
   icons();
   $("stop").onclick = () => currentId && window.studio.cancel(currentId);
   $("prompt").addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && (e.ctrlKey || e.metaKey) && !$("go").disabled) generate();
+    if (e.key === "Enter" && !e.shiftKey && !e.isComposing) {
+      e.preventDefault();
+      if (!$("go").disabled) generate();
+    }
   });
-  window.studio.onProgress((d) => setStatus(`Generating image ${d.done + 1} of ${d.total}...`));
+  $("prompt").addEventListener("input", autosize);
+  $("optBtn").onclick = () => {
+    const open = $("options").hidden;
+    $("options").hidden = !open;
+    $("optBtn").setAttribute("aria-expanded", String(open));
+  };
+  $("refineOn").addEventListener("change", () => $("refineBtn").classList.toggle("on", $("refineOn").checked));
+  document.addEventListener("click", (e) => {
+    if (!$("options").hidden && !e.target.closest("#options, #optBtn")) {
+      $("options").hidden = true;
+      $("optBtn").setAttribute("aria-expanded", "false");
+    }
+  });
+  window.studio.onProgress((d) => {
+    const n = document.querySelector(".turn:last-child .note");
+    if (n && currentId) n.textContent = `Generating image ${d.done + 1} of ${d.total}...`;
+  });
 
   $("settingsBtn").onclick = openSettings;
   $("pickOut").onclick = async () => {
