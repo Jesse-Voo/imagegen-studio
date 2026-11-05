@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: file:; style-src 'self'; script-src 'self'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ImageGen Studio</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<aside>
+  <h1>ImageGen Studio</h1>
+
+  <label>Image model source
+    <select id="backend"></select>
+  </label>
+  <label>Model <input id="model" list="models" placeholder="default"><datalist id="models"></datalist></label>
+  <div id="keyWarn" class="warn" hidden></div>
+
+  <div class="row">
+    <label>Size <select id="size"><option value="square">Square</option><option value="landscape">Landscape</option><option value="portrait">Portrait</option></select></label>
+    <label>Count <input id="count" type="number" min="1" max="8" value="1"></label>
+  </div>
+
+  <div id="refBox">
+    <div class="rowhead"><span>Reference images</span><button id="addRef" class="ghost">Add</button></div>
+    <div id="refs" class="thumbs"></div>
+    <p id="refNote" class="hint" hidden>This source ignores reference images.</p>
+  </div>
+
+  <label class="check"><input id="refineOn" type="checkbox"> Refine my prompt with AI first</label>
+  <div id="refineOpts" hidden>
+    <label>Refine with <select id="refiner"></select></label>
+    <label>Refiner model <input id="refModel" placeholder="default"></label>
+  </div>
+
+  <div class="spacer"></div>
+  <button id="settingsBtn" class="ghost">Settings</button>
+</aside>
+
+<main>
+  <textarea id="prompt" placeholder="Describe the image you want, e.g. a red fox in a snowy forest, watercolor style" rows="4"></textarea>
+  <div class="actions">
+    <button id="refineBtn" class="ghost">Refine prompt</button>
+    <span class="grow"></span>
+    <button id="go" class="primary">Generate</button>
+    <button id="stop" class="ghost" hidden>Cancel</button>
+  </div>
+  <div id="status" class="status" role="status"></div>
+  <div id="gallery"></div>
+</main>
+
+<dialog id="dlg">
+  <form method="dialog" id="settingsForm">
+    <h2>Settings</h2>
+    <label>Save images to
+      <div class="row"><input id="outDir" readonly><button type="button" id="pickOut" class="ghost">Browse</button></div>
+    </label>
+    <label>Gemini API key <input id="geminiKey" type="password" autocomplete="off" placeholder="leave blank to keep the saved key"></label>
+    <label>OpenAI API key <input id="openaiKey" type="password" autocomplete="off" placeholder="leave blank to keep the saved key"></label>
+    <p class="hint">Keys are encrypted with Windows (DPAPI) and stored on this PC only. Environment variables GEMINI_API_KEY and OPENAI_API_KEY also work. ChatGPT sign-in cannot generate images; OpenAI needs an API key.</p>
+    <label>Local image server URL <input id="localUrl" placeholder="http://127.0.0.1:8080/v1"></label>
+    <label>Ollama URL <input id="ollamaUrl" placeholder="http://127.0.0.1:11434"></label>
+    <div class="row">
+      <button type="button" id="clearGemini" class="ghost">Remove Gemini key</button>
+      <button type="button" id="clearOpenai" class="ghost">Remove OpenAI key</button>
+    </div>
+    <div class="actions"><span class="grow"></span><button value="cancel" class="ghost">Close</button><button id="saveSettings" value="save" class="primary">Save</button></div>
+  </form>
+</dialog>
+<script src="app.js"></script>
+</body>
+</html>

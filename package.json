@@ -1,0 +1,22 @@
+{
+  "name": "imagegen-studio",
+  "productName": "ImageGen Studio",
+  "version": "0.1.0",
+  "description": "Desktop app for generating images with Gemini, OpenAI, free and local models, with AI prompt refinement.",
+  "main": "src/main.js",
+  "license": "MIT",
+  "author": "Jesse-Voo",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win portable"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.jessevoo.imagegenstudio",
+    "files": ["src/**/*", "package.json"],
+    "win": { "target": "portable" }
+  }
+}
