@@ -68,7 +68,7 @@ async function agy({ prompt, references, signal }) {
 
     // --disable-slash-commands stops this agy session from loading the image skill and recursing.
     const out = await new Promise((resolve, reject) => {
-      const p = spawn(exe, ["--disable-slash-commands", "-p", text, "--output-format", "json"], { cwd: work, windowsHide: true, shell: /\.cmd$/i.test(exe) });
+      const p = spawn(exe, ["--disable-slash-commands", "-p", text, "--output-format", "json"], { cwd: work, windowsHide: true, stdio: ["ignore", "pipe", "pipe"], shell: /\.cmd$/i.test(exe) });
       let stdout = "";
       let stderr = "";
       p.stdout.on("data", (c) => (stdout += c));
@@ -104,7 +104,9 @@ async function agy({ prompt, references, signal }) {
     }
     throw new Error(`No image appeared for agy conversation ${result.conversation_id}. agy said: ${String(result.response).slice(0, 200)}`);
   } finally {
-    fs.rmSync(work, { recursive: true, force: true });
+    try {
+      fs.rmSync(work, { recursive: true, force: true });
+    } catch {}
   }
 }
 

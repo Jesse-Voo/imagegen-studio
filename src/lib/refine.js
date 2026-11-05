@@ -12,7 +12,13 @@ async function fail(res, what) {
   return new Error(`${what} failed (HTTP ${res.status}). ${body}`.trim());
 }
 
+const cli = require("./cli");
+const viaCli = (fn) => (o) => fn({ ...o, instruction: INSTRUCTION });
+
 const REFINERS = {
+  claude: { label: "Claude Code (your sign-in)", needsKey: null, defaultModel: "", run: viaCli(cli.claudeCode) },
+  codex: { label: "Codex (your sign-in)", needsKey: null, defaultModel: "", run: viaCli(cli.codex) },
+  agy: { label: "Gemini via agy (your sign-in)", needsKey: null, defaultModel: "", run: viaCli(cli.agyText) },
   gemini: {
     label: "Gemini (API key)",
     needsKey: "gemini",

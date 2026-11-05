@@ -22,7 +22,7 @@ Local server tip: [stable-diffusion.cpp](https://github.com/leejet/stable-diffus
 ## Prompt refinement
 
 Tick "Refine my prompt with AI first" (or press "Refine prompt" to preview it) and choose the AI:
-Gemini, OpenAI or a local Ollama model. The refined prompt replaces the text box so you can edit it before generating.
+Claude Code, Codex or agy (they run headlessly with your own sign-in, in an empty temp folder with tools disabled or a read-only sandbox, and only return text), or Gemini / OpenAI with an API key, or a local Ollama model. The refined prompt replaces the text box so you can edit it before generating.
 
 ## Run
 
