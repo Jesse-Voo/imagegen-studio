@@ -9,12 +9,15 @@ It is the standalone companion to [agy-imagegen](https://github.com/Jesse-Voo/ag
 
 | Source | Needs |
 | --- | --- |
+| Gemini via Antigravity (`agy`) | the Antigravity CLI installed and signed in; uses its own Gemini image tool (slow, ignores the size choice, uses your agy quota) |
 | Gemini (`gemini-2.5-flash-image`, `imagen-4.0-generate-001`) | a Google AI Studio API key |
 | OpenAI (`gpt-image-1`, `gpt-image-1-mini`, `dall-e-3`) | an OpenAI API key (ChatGPT sign-in cannot generate images) |
 | Pollinations | nothing (free, lower quality, rate-limited: may answer 402/429) |
 | Local server | any OpenAI-compatible image server, set its URL in Settings |
 
-Reference images (for inspiration or editing) work with Gemini, OpenAI and a local server.
+Reference images (for inspiration or editing) work with agy, Gemini, OpenAI and a local server.
+
+Local server tip: [stable-diffusion.cpp](https://github.com/leejet/stable-diffusion.cpp)'s `sd-server` exposes an OpenAI-compatible `/v1/images/generations`; point Settings at `http://127.0.0.1:8080/v1`.
 
 ## Prompt refinement
 
@@ -37,8 +40,8 @@ variables `GEMINI_API_KEY` and `OPENAI_API_KEY` are also read. Prompts and refer
 
 ## Status
 
-Tested: the app starts, the local-server source generates and saves images against a fake OpenAI-compatible server.
-Not tested with real accounts: Gemini, OpenAI, Pollinations and the refiners (no keys were available), so expect rough edges there.
+Tested end to end in the app: agy and a real local sd-server (SDXL Q8 on an RTX 3060, about 70 s per 1024px image), plus a fake OpenAI-compatible server.
+Not tested with real accounts: Gemini API, OpenAI, Pollinations and the refiners (no keys were available), so expect rough edges there.
 
 ## Responsible use and terms
 

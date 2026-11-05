@@ -117,7 +117,10 @@ async function pollinations({ prompt, model, size, signal }) {
   return result(Buffer.from(await res.arrayBuffer()));
 }
 
+const { agy } = require("./agy");
+
 const BACKENDS = {
+  agy: { label: "Gemini via Antigravity (agy)", fn: agy, needsKey: null, refs: true, defaultModel: "", models: [], note: "Uses your signed-in Antigravity CLI. Slow (30-90 s) and subject to your agy quota." },
   gemini: { label: "Gemini (API key)", fn: gemini, needsKey: "gemini", refs: true, defaultModel: "gemini-2.5-flash-image", models: ["gemini-2.5-flash-image", "imagen-4.0-generate-001"] },
   openai: { label: "OpenAI (API key)", fn: openai, needsKey: "openai", refs: true, defaultModel: "gpt-image-1", models: ["gpt-image-1", "gpt-image-1-mini", "dall-e-3"] },
   pollinations: { label: "Pollinations (free)", fn: pollinations, needsKey: null, refs: false, defaultModel: "flux", models: ["flux", "turbo"] },

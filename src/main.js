@@ -52,7 +52,7 @@ const controllers = new Map();
 ipcMain.handle("meta", () => {
   const s = loadSettings();
   return {
-    backends: Object.fromEntries(Object.entries(BACKENDS).map(([k, b]) => [k, { label: b.label, refs: b.refs, defaultModel: b.defaultModel, models: b.models, hasKey: b.needsKey ? !!getKey(s, b.needsKey) : true }])),
+    backends: Object.fromEntries(Object.entries(BACKENDS).map(([k, b]) => [k, { label: b.label, refs: b.refs, note: b.note || "", defaultModel: b.defaultModel, models: b.models, hasKey: b.needsKey ? !!getKey(s, b.needsKey) : true }])),
     refiners: Object.fromEntries(Object.entries(REFINERS).map(([k, r]) => [k, { label: r.label, defaultModel: r.defaultModel, hasKey: r.needsKey ? !!getKey(s, r.needsKey) : true }])),
     sizes: Object.keys(SIZES),
     settings: { outDir: s.outDir, localUrl: s.localUrl, ollamaUrl: s.ollamaUrl },
